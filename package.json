@@ -1,0 +1,16 @@
+{
+  "name": "overwat",
+  "version": "0.0.1",
+  "description": "A GraphQL API for Overwatch Player Stats",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chris Opperwall",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "lodash": "^4.17.5",
+    "node-fetch": "^2.1.1"
+  }
+}
