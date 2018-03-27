@@ -18,8 +18,8 @@ function getStatNameFromDropdown(selectNode) {
  * Given a container element, grab all stats data from its children.
  * @param {Cheerio Element} playtypeContainer Can either be the quickplay or competitive container.
  */
-function getDetailedStats(playtypeContainer) {
-    const topHeroNodes = playtypeContainer.find("section.content-box.u-max-width-container.hero-comparison-section .progress-category[data-group-id=comparisons]");
+function getTopHeroStats(playtypeContainer) {
+    const topHeroNodes = playtypeContainer.find("section.hero-comparison-section .progress-category[data-group-id=comparisons]");
     const getTopHeroCategoryName = compose(
         getStatNameFromDropdown,
         cheerio
