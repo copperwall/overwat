@@ -16,7 +16,7 @@ function getStatNameFromDropdown(selectNode) {
 }
 
 /**
- * Given a container element, grab all stats data from its children.
+ * Given a container element, grab all top hero stats data from its children.
  * @param {Cheerio Element} playtypeContainer Can either be the quickplay or competitive container.
  */
 function getTopHeroStats(playtypeContainer) {
@@ -46,6 +46,10 @@ function getTopHeroStats(playtypeContainer) {
     return reduce(buildTopHeroesObject)({})(topHeroNodes);
 }
 
+/**
+ * Given a container element, grab all career stats data from its children.
+ * @param {Cheerio Element} playtypeContainer
+ */
 function getCareerStats(playtypeContainer) {
     const statsNodes = playtypeContainer.find("section.career-stats-section div[data-group-id=stats]");
     const getStatsCategoryName = compose(
@@ -53,19 +57,23 @@ function getCareerStats(playtypeContainer) {
         cheerio
     )('select[data-group-id=stats]', playtypeContainer);
 
-    return statsNodes.map((index, statsNode) => {
-        const heroStatsNode = cheerio(statsNode);
-        const heroStats = statsNode.find('tbody > tr').map((index, row) => {
-            const name = cheerio(row).find('td:nth-child(1)').text();
-            const value = cheerio(row).find('td:nth-child(2)').text();
+    const makeHeroStatsPair = compose(
+        row => [row.find('td:nth-child(1)').text(), row.find('td:nth-child(2)').text()],
+        cheerio
+    );
 
-            return { name, value };
-        });
+    function buildCareerStatsObject(careerStats, statsNode) {
+        const heroStatsNode = cheerio(statsNode);
+        const statsRows = heroStatsNode.find('tbody > tr').toArray();
+        const heroStatsPairs = map(makeHeroStatsPair)(statsRows);
 
         const category = getStatsCategoryName(heroStatsNode.attr('data-category-id'));
 
-        return { category, heroStats };
-    });
+        careerStats[category] = _.fromPairs(heroStatsPairs);
+        return careerStats;
+    }
+
+    return reduce(buildCareerStatsObject)({})(statsNodes);
 }
 
 /**
