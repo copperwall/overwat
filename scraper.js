@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const fetch = require('node-fetch');
+const _ = require('lodash');
 const { compose, map, reduce } = require('lodash/fp');
 
 /**
@@ -45,6 +46,28 @@ function getTopHeroStats(playtypeContainer) {
     return reduce(buildTopHeroesObject)({})(topHeroNodes);
 }
 
+function getCareerStats(playtypeContainer) {
+    const statsNodes = playtypeContainer.find("section.career-stats-section div[data-group-id=stats]");
+    const getStatsCategoryName = compose(
+        getStatNameFromDropdown,
+        cheerio
+    )('select[data-group-id=stats]', playtypeContainer);
+
+    return statsNodes.map((index, statsNode) => {
+        const heroStatsNode = cheerio(statsNode);
+        const heroStats = statsNode.find('tbody > tr').map((index, row) => {
+            const name = cheerio(row).find('td:nth-child(1)').text();
+            const value = cheerio(row).find('td:nth-child(2)').text();
+
+            return { name, value };
+        });
+
+        const category = getStatsCategoryName(heroStatsNode.attr('data-category-id'));
+
+        return { category, heroStats };
+    });
+}
+
 /**
  * Consumes a Promise that resolves to an HTML string.
  * 
@@ -63,14 +86,22 @@ function getStatsFromDocument(document) {
 
         const gamesWonText = $(".masthead-detail span").text().match(/\d+/);
         const playerMasthead = $(".masthead-player");
+        const quickplayContainer = $("#quickplay");
+        const competitiveContainer = $("#competitve");
 
         parsed.hero = playerMasthead.children(".header-masthead").text();
         parsed.image = playerMasthead.children(".player-portrait").prop('src');
         parsed.platform = $("#profile-platforms").text();
         parsed.games_won = parseInt(gamesWonText, 10);
 
-        parsed.top_heroes_qp = getDetailedStats($('#quickplay'));
-        parsed.top_heroes_comp = getDetailedStats($('#competitive'));
+        parsed.quickplay = {
+            top_heroes: getTopHeroStats(quickplayContainer),
+            career_stats: getCareerStats(quickplayContainer)
+        }
+        parsed.competitive = {
+            top_heroes: getTopHeroStats(competitiveContainer),
+            career_stats: getCareerStats(competitiveContainer)
+        }
 
         return parsed;
     });
