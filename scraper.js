@@ -1,19 +1,24 @@
 const cheerio = require('cheerio');
 const fetch = require('node-fetch');
 const _ = require('lodash');
-const { compose, map, reduce } = require('lodash/fp');
+const { map, reduce, curry, compose } = require('lodash/fp');
 
 /**
- * Returns a functions that takes a guid and finds the associated category display name
- * in the selectNode element provided to getStatNameFromDropdown.
+ * Given a Cheerio Element and a guid string, return the text value
+ * of the child element whose value attribute matches the guid.
  * 
- * @param {Cheerio Element} selectNode The select node to look up category guids in.
+ * @param {Cheerio Element} container The Cheerio Element to look up category guids in.
+ * @param {String} guid The category guid to look up the name for.
  */
-function getStatNameFromDropdown(selectNode) {
-    return function getStatFromGuid(guid) {
-        return selectNode.children(`[value="${guid}"]`).text();
-    }
+function guidToText(container, guid) {
+    return container.children(`[value="${guid}"]`).text();
 }
+
+/**
+ * Consumes a Cheerio Element and returns a function that
+ * consumes a category guid and returns the text value associated with it.
+ */
+const getStatNameFromDropdown = compose(curry(guidToText), cheerio);
 
 /**
  * Given a container element, grab all top hero stats data from its children.
@@ -21,10 +26,10 @@ function getStatNameFromDropdown(selectNode) {
  */
 function getTopHeroStats(playtypeContainer) {
     const topHeroNodes = playtypeContainer.find("section.hero-comparison-section .progress-category[data-group-id=comparisons]");
-    const getTopHeroCategoryName = compose(
-        getStatNameFromDropdown,
-        cheerio
-    )('select[data-group-id=comparisons]', playtypeContainer);
+    const getTopHeroCategoryName = getStatNameFromDropdown(
+        'select[data-group-id=comparisons]',
+        playtypeContainer
+    );
 
     const heroNodeToObject = compose(
         heroNode => ({
@@ -52,10 +57,10 @@ function getTopHeroStats(playtypeContainer) {
  */
 function getCareerStats(playtypeContainer) {
     const statsNodes = playtypeContainer.find("section.career-stats-section div[data-group-id=stats]");
-    const getStatsCategoryName = compose(
-        getStatNameFromDropdown,
-        cheerio
-    )('select[data-group-id=stats]', playtypeContainer);
+    const getStatsCategoryName = getStatNameFromDropdown(
+        'select[data-group-id=stats]',
+        playtypeContainer
+    );
 
     const makeHeroStatsPair = compose(
         row => [row.find('td:nth-child(1)').text(), row.find('td:nth-child(2)').text()],
