@@ -1,5 +1,7 @@
 # Overwat
 
+![lineup-standard](https://user-images.githubusercontent.com/2539016/38170371-e8536d86-3538-11e8-85e2-0cb125bf6869.jpg)
+
 ## An Overwatch Player Stats Scraper
 
 _Overwat_ is a utility for obtaining player stats for PlayOverwatch player profiles.
@@ -185,4 +187,5 @@ player.then(player => console.log(player.games_won));
 ### Upcoming Work
 
 Adding Achievements to parsed output
+
 Adding a GraphQL frontend
