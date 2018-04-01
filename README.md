@@ -24,7 +24,6 @@ player.then(player => console.log(player.games_won));
 {
   "hero": "Corgmello",
   "image": "https://d1u1mce87gyfbn.cloudfront.net/game/unlocks/0x0250000000001642.png",
-  "platform": "pc",
   "games_won": 39,
   "quickplay": {
     "top_heroes": {

@@ -104,7 +104,6 @@ function getStatsFromDocument(document) {
 
         parsed.hero = playerMasthead.children(".header-masthead").text();
         parsed.image = playerMasthead.children(".player-portrait").prop('src');
-        parsed.platform = $("#profile-platforms").text();
         parsed.games_won = parseInt(gamesWonText, 10);
 
         parsed.quickplay = {
