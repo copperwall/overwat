@@ -25,7 +25,7 @@ const getStatNameFromDropdown = compose(curry(guidToText), cheerio);
  * @param {Cheerio Element} playtypeContainer Can either be the quickplay or competitive container.
  */
 function getTopHeroStats(playtypeContainer) {
-    const topHeroNodes = playtypeContainer.find("section.hero-comparison-section .progress-category[data-group-id=comparisons]");
+    const topHeroNodes = playtypeContainer.find("section.career-section .progress-category[data-group-id=comparisons]");
     const getTopHeroCategoryName = getStatNameFromDropdown(
         'select[data-group-id=comparisons]',
         playtypeContainer
@@ -56,7 +56,7 @@ function getTopHeroStats(playtypeContainer) {
  * @param {Cheerio Element} playtypeContainer
  */
 function getCareerStats(playtypeContainer) {
-    const statsNodes = playtypeContainer.find("section.career-stats-section div[data-group-id=stats]");
+    const statsNodes = playtypeContainer.find("section.career-section div[data-group-id=stats]");
     const getStatsCategoryName = getStatNameFromDropdown(
         'select[data-group-id=stats]',
         playtypeContainer
@@ -100,7 +100,7 @@ function getStatsFromDocument(document) {
         const gamesWonText = $(".masthead-detail span").text().match(/\d+/);
         const playerMasthead = $(".masthead-player");
         const quickplayContainer = $("#quickplay");
-        const competitiveContainer = $("#competitve");
+        const competitiveContainer = $("#competitive");
 
         parsed.hero = playerMasthead.children(".header-masthead").text();
         parsed.image = playerMasthead.children(".player-portrait").prop('src');
